@@ -1,10 +1,11 @@
-import { GeistSans } from 'geist/font/sans'
-import ThemeProvider from '@/providers/ThemeProvider'
-import NextTopLoader from 'nextjs-toploader'
-import { Analytics } from '@vercel/analytics/react'
-import './globals.css'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import Navbar from '@/components/NavBar'
 import ReactQueryProvider from '@/providers/ReactQueryProvider'
+import ThemeProvider from '@/providers/ThemeProvider'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { Analytics } from '@vercel/analytics/react'
+import { GeistSans } from 'geist/font/sans'
+import NextTopLoader from 'nextjs-toploader'
+import './globals.css'
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -12,7 +13,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: 'Next.js and Supabase Starter Kit',
+  title: 'Controle de estoque',
   description: 'The fastest way to build apps with Next.js and Supabase',
 }
 
@@ -25,21 +26,20 @@ export default function RootLayout({
     <html
       lang="en"
       className={GeistSans.className}
-      style={{ colorScheme: 'dark' }}
+      style={{ colorScheme: 'light' }}
     >
       <body className="bg-background text-foreground">
         <NextTopLoader showSpinner={false} height={2} color="#2acf80" />
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
-          enableSystem
+          defaultTheme="light"
           disableTransitionOnChange
         >
           <ReactQueryProvider>
+            <Navbar />
             <main className="flex min-h-screen flex-col items-center">
               {children}
               <Analytics />{' '}
-              {/* ^^ remove this if you are not deploying to vercel. See more at https://vercel.com/docs/analytics  */}
             </main>
             <ReactQueryDevtools initialIsOpen={false} />
           </ReactQueryProvider>
