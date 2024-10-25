@@ -15,6 +15,7 @@ const navItems: NavItem[] = [
   { name: 'Criar Items', href: '/' },
   { name: 'Procurar e Compras/vendas', href: '/search' },
   { name: 'Faturamento', href: '/sales' },
+  { name: 'Estoque', href: '/stock' },
   { name: 'Sair', href: '/logout' },
 ]
 

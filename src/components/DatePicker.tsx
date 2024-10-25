@@ -20,7 +20,7 @@ interface DatePickerProps {
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({ onChange, selected }) => {
-  const [date, setDate] = React.useState<Date>()
+  const [date, setDate] = React.useState<Date>(selected)
 
   useEffect(() => {
     onChange(date || selected)
@@ -44,7 +44,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ onChange, selected }) => {
         <Calendar
           mode="single"
           selected={date || selected}
-          onSelect={setDate}
+          onSelect={(value) => setDate(value || selected)}
           initialFocus
         />
       </PopoverContent>

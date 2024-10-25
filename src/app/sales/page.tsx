@@ -16,6 +16,7 @@ export default function SalesDashboard() {
   >([])
   const [startDate, setStartDate] = useState(startOfMonth(new Date())) // Default: start of current month
   const [endDate, setEndDate] = useState(endOfMonth(new Date())) // Default: end of current month
+  const [viewMode, setViewMode] = useState<'charts' | 'table'>('charts') // Toggle between charts and table view
   const supabase = createBrowserClient()
 
   // Call the PostgreSQL function for sales by item
@@ -90,19 +91,13 @@ export default function SalesDashboard() {
   }, [startDate, endDate]) // Re-fetch when the date range changes
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1 style={{ textAlign: 'center' }}>Painel de Vendas</h1>
+    <div className="mx-auto max-w-screen-xl p-4">
+      <h1 className="mb-6 text-center text-2xl font-bold">Painel de Vendas</h1>
 
       {/* Date Picker */}
-      <div style={{ marginBottom: '20px' }}>
-        <h2>Selecione o Período</h2>
-        <div
-          style={{
-            display: 'flex',
-            gap: '10px',
-            flexDirection: 'column',
-          }}
-        >
+      <div className="mb-4 text-center">
+        <h2 className="text-lg">Selecione o Período</h2>
+        <div className="flex flex-col md:flex-row md:justify-center md:gap-4">
           <DatePicker
             selected={startDate}
             onChange={(date) => setStartDate(startOfMonth(date))}
@@ -114,58 +109,127 @@ export default function SalesDashboard() {
         </div>
       </div>
 
-      {/* Bar Chart for Total Sales by Item */}
-      <div style={{ height: '400px', marginBottom: '20px' }}>
-        <h2>Vendas Totais por Item</h2>
-        <ResponsiveBar
-          data={salesDataByItem}
-          keys={['total']}
-          indexBy="item"
-          margin={{ top: 50, right: 20, bottom: 50, left: 60 }}
-          padding={0.3}
-          valueScale={{ type: 'linear' }}
-          indexScale={{ type: 'band', round: true }}
-          colors={{ scheme: 'nivo' }}
-          axisTop={null}
-          axisRight={null}
-          axisBottom={{
-            tickSize: 5,
-            tickPadding: 5,
-            tickRotation: 0,
-            legend: 'Item',
-            legendPosition: 'middle',
-            legendOffset: 32,
-          }}
-          axisLeft={{
-            tickSize: 5,
-            tickPadding: 5,
-            tickRotation: 0,
-            legend: 'Vendas Totais',
-            legendPosition: 'middle',
-            legendOffset: -40,
-          }}
-          labelSkipWidth={12}
-          labelSkipHeight={12}
-          labelTextColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
-          animate={true}
-        />
+      {/* Button to toggle between charts and tables */}
+      <div className="mb-4 text-center">
+        <button
+          className="rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+          onClick={() =>
+            setViewMode(viewMode === 'charts' ? 'table' : 'charts')
+          }
+        >
+          {viewMode === 'charts' ? 'Ver em Tabelas' : 'Ver em Gráficos'}
+        </button>
       </div>
 
-      {/* Pie Chart for Total Sales by Category */}
-      <div style={{ height: '400px', marginBottom: '20px' }}>
-        <h2>Vendas Totais por Categoria</h2>
-        <ResponsivePie
-          data={salesDataByCategory}
-          margin={{ top: 40, right: 20, bottom: 40, left: 20 }}
-          innerRadius={0.5}
-          padAngle={0.7}
-          cornerRadius={3}
-          colors={{ scheme: 'nivo' }}
-          borderWidth={1}
-          borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
-          animate={true}
-        />
-      </div>
+      {/* Conditionally render either the charts or the table view */}
+      {viewMode === 'charts' ? (
+        <div className="grid grid-cols-1 gap-32 md:grid-cols-2">
+          {/* Bar Chart for Total Sales by Item */}
+          <div style={{ height: '30rem' }}>
+            <h2 className="pb-2 text-center text-lg">Vendas Totais por Item</h2>
+            <ResponsiveBar
+              data={salesDataByItem}
+              keys={['total']}
+              indexBy="item"
+              padding={0.3}
+              margin={{ left: 100 }}
+              layout="horizontal"
+              valueScale={{ type: 'linear' }}
+              indexScale={{ type: 'band', round: true }}
+              colors={{ scheme: 'nivo' }}
+              axisTop={null}
+              axisRight={null}
+              axisBottom={{
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: 0,
+                legend: 'Vendas Totais',
+                legendPosition: 'middle',
+                legendOffset: -32,
+              }}
+              axisLeft={{
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: 0,
+                legend: 'items',
+                legendPosition: 'middle',
+                legendOffset: 60,
+              }}
+              labelSkipWidth={12}
+              labelSkipHeight={12}
+              labelTextColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
+              animate={true}
+            />
+          </div>
+
+          {/* Pie Chart for Total Sales by Category */}
+          <div style={{ height: '30rem' }}>
+            <h2 className="pb-2 text-center text-lg">
+              Vendas Totais por Categoria
+            </h2>
+            <ResponsivePie
+              data={salesDataByCategory}
+              innerRadius={0.5}
+              padAngle={0.7}
+              colors={{ scheme: 'nivo' }}
+              borderWidth={1}
+              borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
+              animate={true}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          {/* Table View */}
+          <h2 className="mb-2 mt-4 text-lg">Tabela de Vendas por Item</h2>
+          <table className="min-w-full border-collapse border border-gray-300">
+            <thead>
+              <tr>
+                <th className="border border-gray-300 px-4 py-2">Item</th>
+                <th className="border border-gray-300 px-4 py-2">
+                  Vendas Totais
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {salesDataByItem.map((item) => (
+                <tr key={item.item} className="border border-gray-300">
+                  <td className="border border-gray-300 px-4 py-2">
+                    {item.item}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {item.total}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <h2 className="mb-2 mt-4 text-lg">Tabela de Vendas por Categoria</h2>
+          <table className="min-w-full border-collapse border border-gray-300">
+            <thead>
+              <tr>
+                <th className="border border-gray-300 px-4 py-2">Categoria</th>
+                <th className="border border-gray-300 px-4 py-2">
+                  Vendas Totais
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {salesDataByCategory.map((category) => (
+                <tr key={category.id} className="border border-gray-300">
+                  <td className="border border-gray-300 px-4 py-2">
+                    {category.label}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {category.value}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }
